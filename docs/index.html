@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>httpcheck — smoke tests HTTP con señal clara</title>
+    <meta
+      name="description"
+      content="CLI en Go para comprobar endpoints HTTP con reintentos, timeout y código de estado esperado."
+    />
+    <link rel="canonical" href="https://melinoeluna4.github.io/httpcheck/" />
+    <meta property="og:title" content="httpcheck — Go CLI para smoke tests HTTP" />
+    <meta property="og:description" content="Comprueba endpoints, status y latencia desde tu pipeline." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://melinoeluna4.github.io/httpcheck/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="theme-color" content="#060b18" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Saltar al contenido</a>
+
+    <header class="top">
+      <a class="brand" href="./"><span class="pulse" aria-hidden="true"></span> httpcheck</a>
+      <nav aria-label="Enlaces del proyecto">
+        <a href="https://github.com/melinoeluna4/httpcheck">GitHub <span aria-hidden="true">↗</span></a>
+        <a href="https://melinoeluna4.github.io/proyectos/httpcheck/">Portfolio</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p class="kicker">HTTP · smoke test</p>
+          <h1 id="hero-title">Sabes que el endpoint está vivo <em>antes</em> de decirlo.</h1>
+          <p class="lede">
+            <strong>httpcheck</strong> pide una URL, compara el status con el esperado y reporta la
+            latencia. Reintentos, timeout y JSON para que el último paso del pipeline sea una
+            comprobación real.
+          </p>
+          <div class="actions">
+            <button
+              class="button button--primary"
+              type="button"
+              data-copy="go install github.com/melinoeluna4/httpcheck@latest"
+            >
+              Copiar instalación
+            </button>
+            <a class="button" href="https://github.com/melinoeluna4/httpcheck">
+              Ver repositorio <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="status-board" role="group" aria-label="Status HTTP de ejemplo">
+          <button class="status status--200 is-active" type="button" data-status="200" data-detail="200 OK · el caso feliz. La URL respondió con el status esperado." aria-pressed="true">
+            200
+          </button>
+          <button class="status status--204" type="button" data-status="204" data-detail="204 No Content · el endpoint respondió sin cuerpo. Útil para health checks que no devuelven payload." aria-pressed="false">
+            204
+          </button>
+          <button class="status status--302" type="button" data-status="302" data-detail="302 Found · una redirección. httpcheck no la sigue por defecto: el status debe ser el esperado." aria-pressed="false">
+            302
+          </button>
+          <button class="status status--503" type="button" data-status="503" data-detail="503 Service Unavailable · el servicio aún no está listo. Reintenta o falla con contexto." aria-pressed="false">
+            503
+          </button>
+          <p class="status-detail" role="status" aria-live="polite">
+            200 OK · el caso feliz. La URL respondió con el status esperado.
+          </p>
+        </div>
+      </section>
+
+      <section class="signal" aria-labelledby="signal-title">
+        <div class="signal__head">
+          <div>
+            <p class="kicker">La señal</p>
+            <h2 id="signal-title">Status + latencia, sin abrir un dashboard</h2>
+          </div>
+          <p class="signal__meta">GET /health · 200 · 231ms</p>
+        </div>
+        <div class="signal__graph" aria-hidden="true">
+          <svg viewBox="0 0 900 120" preserveAspectRatio="none" role="presentation">
+            <path class="grid" d="M0 30H900M0 60H900M0 90H900" />
+            <path class="wave" d="M0 84 L90 84 L110 46 L140 84 L230 84 L250 22 L280 84 L380 84 L400 70 L430 84 L520 84 L540 40 L570 84 L680 84 L700 60 L730 84 L820 84 L840 30 L870 84 L900 84" />
+          </svg>
+        </div>
+        <div class="signal__legend">
+          <span><i class="dot dot--ok" aria-hidden="true"></i> 2xx / 3xx</span>
+          <span><i class="dot dot--retry" aria-hidden="true"></i> retry</span>
+          <span><i class="dot dot--fail" aria-hidden="true"></i> fail</span>
+        </div>
+      </section>
+
+      <section class="features" aria-labelledby="features-title">
+        <p class="kicker">Qué controla</p>
+        <h2 id="features-title">Tres flags, suficiente</h2>
+        <div class="feature-grid">
+          <article>
+            <code>-expect</code>
+            <h3>El status correcto</h3>
+            <p>No siempre es 200. Un health check puede ser 204; una redirección, 302.</p>
+          </article>
+          <article>
+            <code>-retries</code>
+            <h3>El arranque lento</h3>
+            <p>Reintenta con intervalo configurable y muestra cuántos intentos hicieron falta.</p>
+          </article>
+          <article>
+            <code>-json</code>
+            <h3>El pipeline</h3>
+            <p>Un array de resultados con URL, status, latencia, intentos y error.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="usage" aria-labelledby="usage-title">
+        <div>
+          <p class="kicker">Uso</p>
+          <h2 id="usage-title">El último paso del deploy</h2>
+          <p>Comprueba el health check después de desplegar y falla el job si el status no es el esperado.</p>
+        </div>
+        <div class="code-card">
+          <pre><code>httpcheck -retries 3 -timeout 2s https://example.com/health</code></pre>
+          <button
+            class="button button--small"
+            type="button"
+            data-copy="httpcheck -retries 3 -timeout 2s https://example.com/health"
+          >
+            Copiar
+          </button>
+        </div>
+      </section>
+
+      <section class="next" aria-labelledby="next-title">
+        <p class="kicker">Sigue explorando</p>
+        <h2 id="next-title">Más herramientas en Go</h2>
+        <div class="next-links">
+          <a href="https://melinoeluna4.github.io/envcheck/">envcheck <span>→</span></a>
+          <a href="https://melinoeluna4.github.io/portwait/">portwait <span>→</span></a>
+          <a href="https://melinoeluna4.github.io/treehash/">treehash <span>→</span></a>
+          <a href="https://melinoeluna4.github.io/mdtoc/">mdtoc <span>→</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bottom">
+      <p>httpcheck · una herramienta de <a href="https://melinoeluna4.github.io/">Melinoe Luna</a></p>
+      <p><a href="https://github.com/melinoeluna4/httpcheck">README</a> · <a href="https://melinoeluna4.github.io/proyectos/httpcheck/">Ficha</a></p>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
